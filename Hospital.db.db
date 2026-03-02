@@ -1,0 +1,307 @@
+
+create database hospital;
+
+use hospital;
+create table patients( P_ID int primary key,
+					   P_Name varchar(20),
+                       P_Gender varchar(15),
+                       P_Age int,
+                       P_MobileNo varchar(20),
+                       P_DOB date);
+select * from patients;
+insert into patients values (1,"Nithya","Female",22,"9876543210","2002-02-24");
+insert into patients values (2,"Kavya","Female",23,"9876543210","2001-07-22");
+insert into patients values (3,"Saran","Male",25,"9876543210","1999-02-26");
+use hospital;
+
+create table employees ( E_ID int primary key,
+						E_Name varchar(20),
+                        E_Salary int,
+                        E_Gender varchar(15),
+                        E_MobileNo varchar(15),
+                        E_State varchar(30),
+                        E_City varchar(30),
+                        E_PinNo int);
+select * from employees;
+
+insert into employees values ( 11, "DR.Prem",80000,"Male",8907654321,"Andhra Pradesh","Chittoor","517001");
+insert into employees values (12,"DR.Pooji",90000,"Female",7890654321,"Tamil Nadu","Chennai","600001");
+insert into employees values (13,"DR.Nithin",85000,"Male",9086745231,"Andhra Pradesh","Kadapa","516001");
+insert into employees values (14,"DR.Meena",95000,"Female",9345451643,"Tamil Nadu","Madurai","625001");
+insert into employees values (15,"Sharmi",40000,"Female",8765490321,"Tamil Nadu","Tirchy","620001");
+insert into employees values (16,"Sahithi",40000,"Female",7890651234,"Andhra Pradesh","Kurnool","518001");
+insert into employees values (17,"Shanya",45000,"Female",9807651243,"Andhra Pradesh","Visakhapatnam","530001");
+insert into employees values (18,"Tanvi",35000,"Female",7890651234,"Karnataka","Jayanagar","560041");
+insert into employees values (19,"Rushika",35000,"Female",8790612543,"Tamil Nadu","Coimbatore","641001");
+
+use hospital;
+
+create table Doctors( D_ID int primary key,
+					 Dept varchar (50),
+                     Qualification varchar(50));
+select * from doctors;
+insert into doctors values (11,"Neurology","MBBS,MD");
+insert into doctors values (12,"Psychologist","MBBS,MD");
+insert into doctors values (13,"Nutrionist","MBBS,MS");
+insert into doctors values (14,"Cardiology","MBBS,MS");
+
+use hospital;
+
+create table Nurses ( N_ID int primary key,
+					 E_ID int);
+select * from nurses;
+insert into Nurses values (101,15);
+insert into Nurses values (102,16);
+insert into Nurses values (103,17);
+
+use Hospital;
+
+create table receptionist (RCP_ID int primary key,
+						   E_ID int);
+select * from receptionist;
+insert into receptionist values(111,18);
+insert into receptionist values(112,19);
+
+use hospital;
+
+create table records ( Record_No int primary key,
+					  App_No int);
+select * from records;
+insert into records values(201,1001);
+insert into records values(202,1002);
+insert into records values(203,1003);
+
+use hospital;
+
+create table rooms (R_ID int primary key,
+					R_Type varchar(20),
+                    R_Capacity int,
+                    R_Availability varchar(20));
+select * from rooms;
+insert into rooms values (301,"ICU",2,"Available");
+insert into rooms values(302,"General Ward",9,"2 Available");
+insert into rooms values(303,"Labour Ward",3,"1 Available");
+
+use hospital;
+create table test_report (TR_ID int primary key,
+						  P_ID int,
+                          R_ID int,
+                          Test_type varchar(20),
+                          Result varchar(50));
+select * from test_report;
+insert into test_report values (311,1,301,"MRI","Normal");
+insert into test_report values (312,2,302,"Monitoring","Normal");
+insert into test_report values (313,4,303,"Minor Attack","Surgery");
+
+use hospital;
+
+create table bills (B_ID int primary key,
+					P_ID int,
+                    Amount int);
+select * from bills;
+insert into bills values( 401,1,2000);
+insert into bills values( 402,2,2500);
+insert into bills values(403,3,5000);
+#relationship tables
+create table consults ( P_ID int,
+						D_ID int,
+                        Consult_Date date,
+                        primary key (P_ID,D_ID,Consult_Date),
+                        foreign key (P_ID) references patients (P_ID),
+                        foreign key (D_ID) references doctors (D_ID));
+select * from consults;
+insert into consults values( 1,11,"2026-02-21");
+insert into consults values(2,12,"2026-02-25");
+insert into consults values(3,13,"2026-02-28");
+use hospital;
+
+create table Assigned ( P_ID int,
+						R_ID int,
+                        primary key (P_ID,R_ID),
+                        foreign key (P_ID) references patients(P_ID),
+                        foreign key (R_ID) references rooms (R_ID));
+select * from assigned;
+insert into assigned values (1,301);
+insert into assigned values (2,302);
+insert into assigned values (3,303);
+
+use hospital;
+
+create table pays ( P_ID int,
+					B_ID int,
+                    primary key (P_ID,B_ID),
+                    foreign key (P_ID) references patients(P_ID),
+                    foreign key (B_ID) references bills (B_ID));
+select * from pays;
+insert into pays values(1,401);
+insert into pays values(2,402);
+insert into pays values(3,403);
+
+use hospital;
+
+create table governs ( N_ID int,
+					   R_ID int,
+                       primary key(N_ID,R_ID),
+                       foreign key (N_ID) references nurses (N_ID),
+                       foreign key (R_ID) references rooms (R_ID));
+select * from governs;
+insert into governs values(101,301);
+insert into governs values(102,302);
+insert into governs values(103,303);
+
+use hospital;
+
+create table maintains ( RCP_ID int,
+						Record_No int,
+                        primary key (RCP_ID,Record_No),
+                        foreign key(RCP_ID) references receptionist (RCP_ID),
+                        foreign key(Record_No) references records(Record_No));
+select * from maintains; 
+insert into maintains values(111,201);
+insert into maintains values(112,202);
+
+#triggers
+#1.bills table: before insert
+use hospital;
+delimiter //
+create trigger bill_results
+before insert
+on bills
+for each row
+begin
+if new.amount > 0 then
+signal sqlstate'45000'
+set message_text= "Bill amount cannot be negative";
+end if;
+end;
+
+#2.testreport table:after insert
+use hospital;
+create table test_report_log(TR_ID int primary key,
+                              P_ID int,
+                              R_ID int,
+                              Test_Type varchar(50),
+                              Result varchar(50));
+	select* from test_report_log;
+    alter table test_report_log
+    add entrytime time;
+    
+    delimiter //
+    create trigger test_report_details
+    after insert
+    on test_report
+    for each row
+    begin
+    insert into test_report_log values (new.TR_ID,new.P_ID,new.R_ID,new.Test_Type,new.Result,now());
+    end;
+    select* from test_report_log;
+    insert into test_report values (411,1,301,"MRI","Normal");
+    
+    #3.1.bills table:before update
+    use hospital;
+    delimiter //
+    create trigger before_update_bills
+    before update
+    on bills
+    for each row
+    begin
+	if new.amount < 0 then
+    signal sqlstate'45000'
+set message_text= "Bill amount cannot be negative";
+end if;
+end;
+
+#2.rooms table
+ use hospital;
+    delimiter //
+    create trigger before_update_rooms
+    before update
+    on rooms
+    for each row
+    begin
+	if new.R_capacity <= 0 then
+    signal sqlstate'45000'
+set message_text= "Room capacity must be greater than zero";
+end if;
+end;
+
+#4.bills:after update
+use hospital;
+create table bills_update(B_ID int primary key,
+                          old_amount int,
+                          new_amount int,
+                          updated_on time);
+	select * from bills_update;
+    insert into bills_update values (401,2000,3000,now());
+    
+    delimiter //
+    create trigger bills_history
+    after update
+    on bills
+    for each row 
+    begin
+    if old.amount<> new.amount then
+    insert into bills_update values(old.B_ID,OLD.amount,new.amount,now());
+    end if;
+    end;
+    
+    #5.before delete-back up patient data
+     use hospital;
+     create table patient_backup(P_ID int primary key,
+                                 P_Name varchar(20),
+                                 P_Gender varchar(10),
+                                 P_Age int,
+                                 P_Mobileno varchar(10),
+                                 P_DOB date);
+	select * from patient_backup;
+    alter table patient_backup
+    add backup_time varchar (100);
+    
+    delimiter //
+    create trigger before_delete_patient
+    before delete 
+    on patients 
+    for each row
+    begin
+    insert into patient_backup values (old.P_ID,old.P_Name,old.P_Gender,old.P_Age,old.P_Mobileno,old.P_DOB,now());
+    end;
+    
+    #2back_up records data
+     use hospital;
+     create table records_backup(Record_No int primary key,
+								 App_No int,
+                                 Backup_update varchar(100));
+		select * from records_backup;
+        
+        delimiter //
+        create trigger before_delete_records
+        before delete
+        on records
+        for each row
+        begin
+        insert into records_backup values(old.Record_No,old.App_No,now());
+        end;
+        
+        #6. bills table:after delete
+        use hospital;
+        create table bills_delete_log(B_ID int primary key,
+                                      P_ID int,
+                                      amount int,
+                                      deleted_on int);
+		select * from bills_delete_log;
+        
+        delimiter //
+        create trigger after_delete_patient
+        after delete 
+        on bills 
+        for each row
+        begin
+        insert into bills_delete_log values(old.B_ID,old.P_ID,old.amount,now());
+        end;
+        
+        call patient_details;
+        
+        call bills_details;
+        call rooms_details;
+        call records_details;
+        call doctors_details;
