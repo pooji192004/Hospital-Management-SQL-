@@ -1,5 +1,6 @@
+# Description:
 This project was developed as part of my Database Management System coursework to demonstrate ER modeling and relational schema design for a hospital environment.
-  Objectives:
+# Objectives:
         - Maintain patient information
         - Manage doctor and nurse details
         - Track consultations
@@ -8,7 +9,7 @@ This project was developed as part of my Database Management System coursework t
         - Store test reports
         - Maintain hospital records
 
-This system handles:
+# This system handles:
         - Patient details
         - Doctor consultations
         - Employee management
@@ -18,12 +19,13 @@ This system handles:
         - Hospital records
 The project is implemented using MySQL.
 
-ER Diagram:
-          The ER Diagram of the database is included in this repository as:`erd hospital.mwb`
+# ER Diagram:
+          The ER Diagram of the database is included in this repository as:
+          
 
   .It shows relationships between all entities in the system.
   
-Technologies Used
+# Technologies Used
          - MysQL
          - MySQL Workbench
          - SQL (DDL, DML, Constraints)
