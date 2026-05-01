@@ -20,8 +20,8 @@ This project was developed as part of my Database Management System coursework t
 The project is implemented using MySQL.
 
 # ER Diagram:
-          The ER Diagram of the database is included in this repository as:
-          
+   The ER Diagram of the database is included in this repository as:
+         -https://github.com/pooji192004/Hospital-Management-SQL-/blob/main/ERD%20hospital.mwb
 
   .It shows relationships between all entities in the system.
   
