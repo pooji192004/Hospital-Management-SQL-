@@ -1,6 +1,6 @@
-# Description:
+# Description
 This project was developed as part of my Database Management System coursework to demonstrate ER modeling and relational schema design for a hospital environment.
-# Objectives:
+# Objectives
         - Maintain patient information
         - Manage doctor and nurse details
         - Track consultations
